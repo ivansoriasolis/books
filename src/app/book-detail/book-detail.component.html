@@ -1,0 +1,12 @@
+<h3>Detalles del Libro</h3>
+<div *ngIf="book">
+    <p><strong>{{ book.title | uppercase }}</strong></p>
+    <p>Autor: {{ book.author }}</p>
+    <p>Año: {{ book.year }}</p>
+    <p>Publicado: {{ book.publishDate | date:'longDate' }}</p>
+    <ng-container *ngIf="(authService.authState$ | async) as user">
+        <button (click)="eliminar(book.id)">Eliminar</button>
+        <button (click)="editar(book.id)">Editar</button>
+    </ng-container>
+
+</div>

@@ -1,0 +1,17 @@
+<h1>Catálogo de Libros</h1>
+<nav>
+    <a [routerLink]="['/home']">Inicio</a>
+    <a [routerLink]="['/catalogo']">Catálogo</a>
+    <a [routerLink]="['/contacto']">Contacto</a>
+
+    <ng-container *ngIf="(authService.authState$ | async) as user; else sinSesion"> <!-- Verifica si hay un usuario autenticado -->
+        
+        <a [routerLink]="['/book-form-reactive']">Agregar Libro</a>
+        <div>
+            {{ user.displayName || user.email }} | <a href="#" (click)=onLogout()>Salir</a>
+        </div>
+    </ng-container>
+    <ng-template #sinSesion>
+        <a [routerLink]="['/login']">Login</a>
+    </ng-template>
+</nav>

@@ -1,0 +1,5 @@
+<h2>Libros disponibles</h2>
+<input type="text" [(ngModel)]="searchText" placeholder="Buscar libro...">
+<p>Buscando: {{ searchText }}</p>
+<router-outlet></router-outlet>
+<app-book-list [searchText]="searchText"></app-book-list>

@@ -1,0 +1,15 @@
+<h2>Iniciar sesión</h2>
+<form [formGroup]="loginForm" (ngSubmit)="onLogin()" >
+    <input formControlName="email" type="email"  placeholder="Correo electrónico">
+    <br>
+    <input formControlName="password" type="password"  placeholder="Contraseña">
+    <br>
+    <button type="submit" [disabled]="loginForm.invalid">Iniciar sesión</button>  
+</form>
+<button (click) = "onLoginWithGoogle()">Iniciar sesión con Google</button>
+<br>
+<div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+</div>
+<div>
+    ¿No tienes una cuenta? <a [routerLink]="['/register']">Registrarse</a></div>

@@ -1,1 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
+.error {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 4px;
+  display: block;
+}
+input.ng-invalid.ng-touched {
+  border: 1px solid red;
+}

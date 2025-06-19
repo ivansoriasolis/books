@@ -1,0 +1,49 @@
+<form [formGroup]="bookForm" (ngSubmit)="guardar()">
+  <label>Título:
+    <input formControlName="title">
+  </label>
+  <div *ngIf="bookForm.get('title')?.errors?.['titleTaken'] && bookForm.get('title')?.touched">
+  <small class="error">Este título ya existe en el catálogo</small>
+</div>
+  <div *ngIf="bookForm.get('title')?.errors?.['required'] && bookForm.get('title')?.touched">
+    <small class="error">El título es obligatorio.</small>
+  </div>
+  <br>
+
+  <label>Autor:
+    <input formControlName="author">
+  </label>
+  <div *ngIf="bookForm.get('author')?.invalid && bookForm.get('author')?.touched">
+    <small class="error">El autor es obligatorio.</small>
+  </div>
+  <br>
+
+  <label>Año:
+    <input type="number" formControlName="year">
+  </label>
+    <div *ngIf="bookForm.get('year')?.invalid && bookForm.get('year')?.touched">
+        <small class="error">El año es obligatorio y debe ser un número.</small>
+    </div>
+    <div *ngIf="bookForm.get('year')?.errors?.['invalidYear'] && bookForm.get('year')?.touched">
+        <small class="error">El año debe estar entre 1900 y {{currentYear}}.</small>
+        </div>
+        <br>
+
+  <label>Fecha de publicación:
+    <input type="date" formControlName="publishDate">
+  </label>
+  <div *ngIf="bookForm.get('publishDate')?.invalid && bookForm.get('publishDate')?.touched">
+    <small class="error">La fecha de publicación es obligatoria.</small>
+    </div>
+  <br>
+
+  <button type="submit" [disabled] = "bookForm.invalid || bookForm.pristine">
+    {{ esEdicion ? 'Actualizar Libro' : 'Agregar Libro' }}
+  </button>
+  <button (click)="cancelar()">Cancelar</button>
+</form>
+
+<div *ngIf="enviado">
+  <h4>Libro enviado:</h4>
+  <pre>{{ bookForm.value | json }}</pre>
+</div>

@@ -1,0 +1,8 @@
+<ul>
+  <li *ngFor="let book of filteredBooks$ | async" >
+    <a [routerLink]="['detalle', book.id]">
+    {{ book.title | uppercase }} — {{ book.author }} ({{ book.year }})
+    </a>
+  </li>
+</ul>
+<!-- Mostrar detalles solo si selectedBook no es null -->
