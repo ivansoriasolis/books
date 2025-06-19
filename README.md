@@ -25,18 +25,7 @@ Aplicación web desarrollada en **Angular 20** y **Firebase** que permite gestio
 - **TypeScript**
 - **HTML5 & CSS3**
 
-## 📸 Capturas de pantalla
 
-| Pantalla de Catálogo | Detalle de Libro | Login con Google |
-|:--------------------|:----------------|:----------------|
-| ![Catálogo](./screenshots/catalogo.png) | ![Detalle](./screenshots/detalle.png) | ![Login](./screenshots/login.png) |
-
-## 📦 Instalación y ejecución
-
-1. Clona el repositorio:
-
-```bash
-git clone https://github.com/tuusuario/catalogo-libros.git
 
 
 Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
