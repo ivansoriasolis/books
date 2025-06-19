@@ -37,10 +37,16 @@
     </div>
   <br>
 
-  <button type="submit" [disabled] = "bookForm.invalid || bookForm.pristine">
+  <input type="file" (change)="onFileSelected($event)" title="Seleccionar imagen">
+  <br>
+  <img *ngIf="imagePreview" [src]="imagePreview" alt="Vista previa" class="cover-image">
+<div>
+  <button type="submit" [disabled] = "bookForm.invalid">
     {{ esEdicion ? 'Actualizar Libro' : 'Agregar Libro' }}
   </button>
   <button (click)="cancelar()">Cancelar</button>
+</div>
+
 </form>
 
 <div *ngIf="enviado">

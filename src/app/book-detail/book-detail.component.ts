@@ -23,16 +23,13 @@ export class BookDetailComponent {
   ngOnInit() {
     this.route.paramMap.subscribe((params) => {
       const id = params.get('id');
-      console.log(id);
       this.bookService.getBookById(id!).then((book) => {
         this.book = book;
-        console.log(this.book);
       });
     });
   }
 
   editar(id: string){
-    console.log(id);
     this.router.navigate(['/book-form-reactive', id]);
     }
 

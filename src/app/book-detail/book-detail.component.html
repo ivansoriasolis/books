@@ -1,6 +1,8 @@
 <h3>Detalles del Libro</h3>
 <div *ngIf="book">
     <p><strong>{{ book.title | uppercase }}</strong></p>
+    <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="Imagen del libro"
+        style="max-width: 200px; max-height: 200px;">
     <p>Autor: {{ book.author }}</p>
     <p>Año: {{ book.year }}</p>
     <p>Publicado: {{ book.publishDate | date:'longDate' }}</p>

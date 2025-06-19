@@ -4,6 +4,8 @@ import { Book } from '../models/book';
 import { addDoc, collection, deleteDoc, doc, getDoc, setDoc, updateDoc, where } from 'firebase/firestore';
 import { collectionData, Firestore } from '@angular/fire/firestore';
 import { CollectionReference } from '@angular/fire/compat/firestore';
+import { deleteObject, getDownloadURL, ref, Storage, uploadBytes } from '@angular/fire/storage';
+import { refFromURL } from '@angular/fire/database';
 
 @Injectable({
   providedIn: 'root'
@@ -12,38 +14,84 @@ export class BookService {
   books: Book[] = [];
   titles: string[] = [];
   private booksRef;
-  
-  constructor(private firestore: Firestore) { 
+
+  constructor(private firestore: Firestore,
+    private storage: Storage,
+  ) {
     this.booksRef = collection(this.firestore, 'books'); // Crear una referencia a la colección 'books' en Firestore
-   }
+  }
 
   getBooks(): Observable<Book[]> { // Obtener los libros de Firestore
     const data = collectionData(this.booksRef, { idField: 'id' }) // Obtener los datos de la colección 'books' y asignar el campo 'id' a cada libro
-    return data  as Observable<Book[]>; // Se usa un Observable para que se actualice automáticamente cuando se agreguen, actualicen o eliminen libros en Firestore
-  } 
+    return data as Observable<Book[]>; // Se usa un Observable para que se actualice automáticamente cuando se agreguen, actualicen o eliminen libros en Firestore
+  }
 
-  async addBook(book: Book) {
-    const {id, ...bookData} = book; // Desestructurar el libro para eliminar el campo 'id' si existe
+  // Método para obtener los títulos de los libros
+  async addImage(imageFile: File): Promise<string> {
+    if (imageFile) {
+      const imagePath = `book-covers/${Date.now()}-${imageFile.name}`; // Crear una ruta única para la imagen usando la marca de tiempo actual y el nombre del archivo
+      const imageRef = ref(this.storage, imagePath); // Crear una referencia a la ubicación donde se almacenará la imagen en Firebase Storage
+      await uploadBytes(imageRef, imageFile); // Subir el archivo de imagen a Firebase Storage
+      return await getDownloadURL(imageRef); // Obtener la URL de descarga de la imagen después de subirla
+    }
+    return ''; // Si no hay archivo de imagen, retorna undefined
+  }
+
+  async addBook(book: Book, imageFile: File) {
+    book.imageUrl = await this.addImage(imageFile); // Llamar al método para agregar la imagen y obtener su URL
+    const { id, ...bookData } = book; // Desestructurar el libro para eliminar el campo 'id' si existe
     await addDoc(this.booksRef, bookData); // Agregar un nuevo libro a la colección 'books' en Firestore
   }
 
   async getBookById(id: string): Promise<Book | undefined> {
-    const bookDoc = doc(this.firestore, 'books', id ); // Crear una referencia al documento del libro
+    const bookDoc = doc(this.firestore, 'books', id); // Crear una referencia al documento del libro
     const docSnap = await getDoc(bookDoc); // Obtener el documento del libro
     if (docSnap.exists()) {
       const data = docSnap.data() as Book; // Convertir los datos del documento a tipo Book
-      return {...data, id: docSnap.id}; // Retornar el libro con su ID
-    } 
+      return { ...data, id: docSnap.id }; // Retornar el libro con su ID
+    }
     return undefined; // No se encontró el libro
   }
 
-  async updateBook(id: string, book: Partial<Book>) {
+  async updateBook(id: string, book: Partial<Book>, imageFile?: File) {
     const bookRef = doc(this.firestore, 'books', id); // Crear una referencia al documento del libro
+    book.imageUrl = await this.addImage(imageFile!); // Llamar al método para agregar la imagen y obtener su URL
     await updateDoc(bookRef, book); // Actualizar el libro en Firestore
   }
 
-  async deleteBook(id: string){
+  async deleteBook(id: string) {
+    // Obtener el libro primero para conocer su imageUrl
+    const book = await this.getBookById(id);
+    if (!book) {
+      console.error('No se encontró el libro');
+      return;
+    }
+
+    // Si tiene imagen, eliminarla de Storage
+    if (book.imageUrl) {
+      try {
+        // Obtener la referencia desde la URL de descarga
+        const imagePath = this.getImagePathFromUrl(book.imageUrl);
+        const imageStorageRef = ref(this.storage, imagePath);
+        await deleteObject(imageStorageRef);
+        console.log('Imagen eliminada correctamente');
+      } catch (error) {
+        console.error('Error eliminando imagen:', error);
+      }
+    }
+
+    // Eliminar el documento en Firestore
     const bookDoc = doc(this.firestore, 'books', id); // Crear una referencia al documento del libro
     await deleteDoc(bookDoc); // Eliminar el libro de Firestore
   }
+
+  getImagePathFromUrl(url: string): string {
+    const baseUrl = 'https://firebasestorage.googleapis.com/v0/b/';
+    const startIndex = url.indexOf('/o/') + 3;
+    const endIndex = url.indexOf('?');
+    const path = decodeURIComponent(url.substring(startIndex, endIndex));
+    return path;
+  }
+
+
 }
