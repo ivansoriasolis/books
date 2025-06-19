@@ -1,5 +1,5 @@
 # 📚 Catálogo de Libros
-https://books-a79aa.web.app/catalogo
+https://books-a79aa.web.app
 
 Aplicación web desarrollada en **Angular 20** y **Firebase** que permite gestionar y consultar un catálogo de libros en línea.
 
