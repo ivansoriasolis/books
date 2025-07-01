@@ -1,5 +1,20 @@
-<h2>Libros disponibles</h2>
-<input type="text" [(ngModel)]="searchText" placeholder="Buscar libro...">
-<p>Buscando: {{ searchText }}</p>
-<router-outlet></router-outlet>
-<app-book-list [searchText]="searchText"></app-book-list>
+<div class="flex h-screen">
+    <!-- Sección izquierda -->
+    <div class="w-3/4 bg-gray-100 p-4">
+        <div class="p-6 bg-gray-50 rounded-xl shadow space-y-4">
+            <h2 class="text-2xl font-bold text-gray-800">Catálogo de libros</h2>
+
+            <input type="text" [(ngModel)]="searchText" placeholder="Buscar libro..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+
+            <p class="text-sm text-gray-600">Buscando: <span class="font-medium">{{ searchText }}</span></p>
+
+            <app-book-list [searchText]="searchText"></app-book-list>
+        </div>
+    </div>
+
+    <!-- Sección derecha -->
+    <div class="w-1/4 bg-white p-4">
+        <router-outlet></router-outlet>
+    </div>
+</div>

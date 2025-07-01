@@ -19,6 +19,7 @@ export class BookFormReactiveComponent {
   esEdicion: boolean = false; // Variable para determinar si es edición o creación de un libro
   currentYear: number = new Date().getFullYear(); // Obtiene el año actual para la validación del año de publicación
   enviado: boolean = false; // Variable para indicar si el formulario ha sido enviado
+  oldUrl: string = ''; // Almacena la URL de la imagen anterior para eliminarla si se actualiza
 
   selectedFile!:File;
   imagePreview: string | ArrayBuffer | null = null;
@@ -52,6 +53,7 @@ export class BookFormReactiveComponent {
       this.esEdicion = true; // Cambia a modo edición
       const book = await this.bookService.getBookById(id); // Obtiene el libro por ID
       if (book) {
+        this.oldUrl = book.imageUrl!; // Guarda la URL de la imagen anterior para eliminarla si se actualiza
         this.bookForm.patchValue(book); // Rellena el formulario con los datos del libro
         this.imagePreview = book.imageUrl!; // Establece la vista previa de la imagen si existe
         this.existingTitles = this.existingTitles.filter(title => title !== book.title); // Elimina el título del libro actual de los títulos existentes para evitar conflictos en la validación
@@ -67,7 +69,7 @@ export class BookFormReactiveComponent {
     }
     const book = this.bookForm.value // Obtiene los valores del formulario
     if (this.esEdicion)
-      await this.bookService.updateBook(book.id, book, this.selectedFile) // Si es edición, actualiza el libro
+      await this.bookService.updateBook(book.id, book, this.selectedFile, this.oldUrl) // Si es edición, actualiza el libro
     else
       await this.bookService.addBook(book, this.selectedFile);
 

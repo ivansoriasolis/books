@@ -1,8 +1,10 @@
-<ul>
-  <li *ngFor="let book of filteredBooks$ | async" >
+<div class="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+  <div *ngFor="let book of filteredBooks$ | async" class="bg-white rounded-xl shadow p-3 flex flex-col">
     <a [routerLink]="['detalle', book.id]">
-    {{ book.title | uppercase }} — {{ book.author }} ({{ book.year }})
+      <img [src]="book.imageUrl ? book.imageUrl : 'sin_imagen.png'" alt="{{ book.title }}"
+        class="w-full h-36 object-cover rounded-lg mb-2">
+      <h3 class="text-base font-semibold mb-1 truncate">{{ book.title | uppercase}}</h3>
+      <p class="text-sm text-gray-600 mb-1 truncate">{{ book.author }}</p>
     </a>
-  </li>
-</ul>
-<!-- Mostrar detalles solo si selectedBook no es null -->
+  </div>
+</div>

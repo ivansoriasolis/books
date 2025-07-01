@@ -1,5 +1,12 @@
-<h1>Catálogo de Libros v 0.16</h1>
-<nav>
+<nav class="flex items-center justify-between p-4 bg-gray-800 text-white shadow">
+  <!-- Sección izquierda: logo y título -->
+  <div class="flex items-center">
+    <img src="logo.png" alt="Logo" class="h-10 w-10 mr-3 rounded-full" />
+    <span class="text-xl font-bold">Catálogo de Libros</span>
+  </div>
+
+  <!-- Sección derecha: enlaces -->
+  <div class="flex space-x-4">
     <a [routerLink]="['/home']">Inicio</a>
     <a [routerLink]="['/catalogo']">Catálogo</a>
     <a [routerLink]="['/contacto']">Contacto</a>
@@ -14,4 +21,5 @@
     <ng-template #sinSesion>
         <a [routerLink]="['/login']">Login</a>
     </ng-template>
+  </div>
 </nav>

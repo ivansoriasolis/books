@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
-import { firstValueFrom, map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Book } from '../models/book';
 import { addDoc, collection, deleteDoc, doc, getDoc, setDoc, updateDoc, where } from 'firebase/firestore';
 import { collectionData, Firestore } from '@angular/fire/firestore';
-import { CollectionReference } from '@angular/fire/compat/firestore';
 import { deleteObject, getDownloadURL, ref, Storage, uploadBytes } from '@angular/fire/storage';
-import { refFromURL } from '@angular/fire/database';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +38,7 @@ export class BookService {
   async addBook(book: Book, imageFile: File) {
     book.imageUrl = await this.addImage(imageFile); // Llamar al método para agregar la imagen y obtener su URL
     const { id, ...bookData } = book; // Desestructurar el libro para eliminar el campo 'id' si existe
-    await addDoc(this.booksRef, bookData); // Agregar un nuevo libro a la colección 'books' en Firestore
+    addDoc(this.booksRef, bookData); // Agregar un nuevo libro a la colección 'books' en Firestore
   }
 
   async getBookById(id: string): Promise<Book | undefined> {
@@ -53,10 +51,12 @@ export class BookService {
     return undefined; // No se encontró el libro
   }
 
-  async updateBook(id: string, book: Partial<Book>, imageFile?: File) {
+  async updateBook(id: string, book: Partial<Book>, imageFile?: File, oldUrl?: string) {
     const bookRef = doc(this.firestore, 'books', id); // Crear una referencia al documento del libro
+    this.deleteImageStorage(oldUrl!); // Eliminar la imagen anterior del libro de Firebase Storage si existe
+    console.log(oldUrl);
     book.imageUrl = await this.addImage(imageFile!); // Llamar al método para agregar la imagen y obtener su URL
-    await updateDoc(bookRef, book); // Actualizar el libro en Firestore
+    updateDoc(bookRef, book); // Actualizar el libro en Firestore
   }
 
   async deleteBook(id: string) {
@@ -67,11 +67,20 @@ export class BookService {
       return;
     }
 
-    // Si tiene imagen, eliminarla de Storage
-    if (book.imageUrl) {
+    // Si el libro tiene una imagen, eliminarla de Firebase Storage
+    this.deleteImageStorage(book.imageUrl!); // Eliminar la imagen del libro de Firebase Storage
+
+    // Eliminar el documento en Firestore
+    const bookDoc = doc(this.firestore, 'books', id); // Crear una referencia al documento del libro
+    deleteDoc(bookDoc); // Eliminar el libro de Firestore
+  }
+
+  async deleteImageStorage(imageUrl: string): Promise<void> {
+        // Si tiene imagen, eliminarla de Storage
+    if (imageUrl) {
       try {
         // Obtener la referencia desde la URL de descarga
-        const imagePath = this.getImagePathFromUrl(book.imageUrl);
+        const imagePath = this.getImagePathFromUrl(imageUrl);
         const imageStorageRef = ref(this.storage, imagePath);
         await deleteObject(imageStorageRef);
         console.log('Imagen eliminada correctamente');
@@ -79,15 +88,10 @@ export class BookService {
         console.error('Error eliminando imagen:', error);
       }
     }
-
-    // Eliminar el documento en Firestore
-    const bookDoc = doc(this.firestore, 'books', id); // Crear una referencia al documento del libro
-    await deleteDoc(bookDoc); // Eliminar el libro de Firestore
   }
-
+  //
   getImagePathFromUrl(url: string): string {
-    const baseUrl = 'https://firebasestorage.googleapis.com/v0/b/';
-    const startIndex = url.indexOf('/o/') + 3;
+    const startIndex = url.indexOf('/o/') + 3; //
     const endIndex = url.indexOf('?');
     const path = decodeURIComponent(url.substring(startIndex, endIndex));
     return path;

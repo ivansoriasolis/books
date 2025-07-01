@@ -1,14 +1,32 @@
-<h3>Detalles del Libro</h3>
 <div *ngIf="book">
-    <p><strong>{{ book.title | uppercase }}</strong></p>
-    <img *ngIf="book.imageUrl" [src]="book.imageUrl" alt="Imagen del libro"
-        style="max-width: 200px; max-height: 200px;">
-    <p>Autor: {{ book.author }}</p>
-    <p>Año: {{ book.year }}</p>
-    <p>Publicado: {{ book.publishDate | date:'longDate' }}</p>
-    <ng-container *ngIf="(authService.authState$ | async) as user">
-        <button (click)="eliminar(book.id)">Eliminar</button>
-        <button (click)="editar(book.id)">Editar</button>
-    </ng-container>
+    <div class="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden max-w-xl w-full">
+            <div class="aspect-[3/4] w-full overflow-hidden rounded-2xl mb-4">
+                <img [src]="book.imageUrl ? book.imageUrl : 'sin_imagen.png'" alt="Portada"
+                    class="w-full h-full object-cover">
+            </div>
+            <div class="p-6">
+                <h2 class="text-3xl font-bold mb-4">{{ book.title | uppercase}}</h2>
+                <p class="text-lg text-gray-700 mb-2">Autor: {{ book.author }}</p>
+                <p class="text-md text-gray-500 mb-4">Año: {{ book.year | date:'longDate' }}</p>
+                            <ng-container *ngIf="(authService.authState$ | async) as user">
+                <div class="flex space-x-2 mt-4">
+                    <button (click)="eliminar(book.id)"
+                        class="px-4 py-2 bg-red-500 text-white rounded-lg shadow hover:bg-red-600 transition">
+                        Eliminar
+                    </button>
+                    <button (click)="editar(book.id)"
+                        class="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition">
+                        Editar
+                    </button>
+                </div>
+            </ng-container>
+            </div>
+
+        </div>
+
+
+    </div>
+
 
 </div>
