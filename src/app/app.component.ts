@@ -27,7 +27,7 @@ export class AppComponent {
         this.router.navigate(['/catalogo']); // Redirigir al catálogo si el usuario está autenticado
       }
       else {
-        this.router.navigate(['/login']); // Redirigir al login si el usuario no está autenticado
+        this.router.navigate(['/home']); // Redirigir al login si el usuario no está autenticado
       }
     });
   }

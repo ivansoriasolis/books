@@ -1,25 +1,57 @@
-<nav class="flex items-center justify-between p-4 bg-gray-800 text-white shadow">
-  <!-- Sección izquierda: logo y título -->
-  <div class="flex items-center">
-    <img src="logo.png" alt="Logo" class="h-10 w-10 mr-3 rounded-full" />
+<nav class="flex items-center justify-between p-4 bg-gray-800 text-white shadow relative z-10">
+  <!-- Logo, título y nombre de usuario -->
+<div class="flex items-center space-x-3">
+  <!-- Logo -->
+  <img src="logo.png" alt="Logo" class="h-12 w-12 rounded-full" />
+
+  <!-- Título y nombre de usuario -->
+  <div class="flex flex-col">
     <span class="text-xl font-bold">Catálogo de Libros</span>
-  </div>
 
-  <!-- Sección derecha: enlaces -->
-  <div class="flex space-x-4">
-    <a [routerLink]="['/home']">Inicio</a>
-    <a [routerLink]="['/catalogo']">Catálogo</a>
-    <a [routerLink]="['/contacto']">Contacto</a>
-
-    <ng-container *ngIf="(authService.authState$ | async) as user; else sinSesion"> <!-- Verifica si hay un usuario autenticado -->
-        
-        <a [routerLink]="['/book-form-reactive']">Agregar Libro</a>
-        <div>
-            {{ user.displayName || user.email }} | <a href="#" (click)=onLogout()>Salir</a>
-        </div>
+    <ng-container *ngIf="(authService.authState$ | async) as user">
+      <span class="text-sm text-gray-300">{{ user.displayName || user.email }}</span>
     </ng-container>
+  </div>
+</div>
+  <!-- Botón de menú móvil -->
+  <button class="md:hidden text-white focus:outline-none" (click)="menuAbierto = !menuAbierto">
+    <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2"
+      viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <!-- Menú horizontal escritorio -->
+  <div class="hidden md:flex space-x-4 items-center">
+    <a [routerLink]="['/home']" class="hover:underline">Inicio</a>
+    <a [routerLink]="['/catalogo']" class="hover:underline">Catálogo</a>
+    <a [routerLink]="['/contacto']" class="hover:underline">Contacto</a>
+
+    <ng-container *ngIf="(authService.authState$ | async) as user; else sinSesion">
+      <a [routerLink]="['/book-form-reactive']" class="hover:underline">Agregar Libro</a>
+      <a href="#" (click)="onLogout()" class="hover:underline">Salir</a>
+    </ng-container>
+
     <ng-template #sinSesion>
-        <a [routerLink]="['/login']">Login</a>
+      <a [routerLink]="['/login']" class="hover:underline">Login</a>
     </ng-template>
   </div>
 </nav>
+
+
+<!-- Menú desplegable móvil como overlay -->
+<div *ngIf="menuAbierto"
+  class="absolute top-16 left-0 w-full bg-gray-800 text-white p-4 space-y-3 z-20 shadow-lg md:hidden">
+  <a [routerLink]="['/home']" class="block hover:underline" (click)="menuAbierto = false">Inicio</a>
+  <a [routerLink]="['/catalogo']" class="block hover:underline" (click)="menuAbierto = false">Catálogo</a>
+  <a [routerLink]="['/contacto']" class="block hover:underline" (click)="menuAbierto = false">Contacto</a>
+
+  <ng-container *ngIf="(authService.authState$ | async) as user; else sinSesionMobile">
+    <a [routerLink]="['/book-form-reactive']" class="block hover:underline" (click)="menuAbierto = false">Agregar Libro</a>
+    <a href="#" (click)="onLogout(); menuAbierto = false" class="block hover:underline">Salir</a>
+  </ng-container>
+
+  <ng-template #sinSesionMobile>
+    <a [routerLink]="['/login']" class="block hover:underline" (click)="menuAbierto = false">Login</a>
+  </ng-template>
+</div>

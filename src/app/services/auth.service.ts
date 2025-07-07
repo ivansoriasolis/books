@@ -32,12 +32,16 @@ export class AuthService {
 
   // Método para cerrar sesión
   async logout(): Promise<void> {
-      await signOut(this.auth); // Cerrar sesión del usuario
+    await signOut(this.auth); // Cerrar sesión del usuario
   }
 
   // Método para verificar si el usuario está logueado
-  estaAutenticado():Observable<boolean> {
+  estaAutenticado(): Observable<boolean> {
     return this.authState$.pipe(map(user => !!user)); // Retorna un observable que emite true si el usuario está autenticado, false en caso contrario
+  }
+
+  getUserId(): string | null {
+    return this.auth.currentUser ? this.auth.currentUser.uid : null;
   }
 
 }

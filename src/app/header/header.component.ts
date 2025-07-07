@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 })
 export class HeaderComponent {
   @Input() title: string = "título";
+  menuAbierto: boolean = false;
 
   constructor(public authService: AuthService,
     private router: Router,

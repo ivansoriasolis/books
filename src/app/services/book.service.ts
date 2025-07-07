@@ -25,9 +25,9 @@ export class BookService {
   }
 
   // Método para obtener los títulos de los libros
-  async addImage(imageFile: File): Promise<string> {
+  async addImage(imageFile: File, userId: string): Promise<string> {
     if (imageFile) {
-      const imagePath = `book-covers/${Date.now()}-${imageFile.name}`; // Crear una ruta única para la imagen usando la marca de tiempo actual y el nombre del archivo
+      const imagePath = `book-covers/${userId}/${Date.now()}-${imageFile.name}`; // Crear una ruta única para la imagen usando la marca de tiempo actual y el nombre del archivo
       const imageRef = ref(this.storage, imagePath); // Crear una referencia a la ubicación donde se almacenará la imagen en Firebase Storage
       await uploadBytes(imageRef, imageFile); // Subir el archivo de imagen a Firebase Storage
       return await getDownloadURL(imageRef); // Obtener la URL de descarga de la imagen después de subirla
@@ -36,7 +36,8 @@ export class BookService {
   }
 
   async addBook(book: Book, imageFile: File) {
-    book.imageUrl = await this.addImage(imageFile); // Llamar al método para agregar la imagen y obtener su URL
+    console.log('uid actual:', book.ownerId);
+    book.imageUrl = await this.addImage(imageFile, book.ownerId!); // Llamar al método para agregar la imagen y obtener su URL
     const { id, ...bookData } = book; // Desestructurar el libro para eliminar el campo 'id' si existe
     addDoc(this.booksRef, bookData); // Agregar un nuevo libro a la colección 'books' en Firestore
   }
@@ -53,10 +54,15 @@ export class BookService {
 
   async updateBook(id: string, book: Partial<Book>, imageFile?: File, oldUrl?: string) {
     const bookRef = doc(this.firestore, 'books', id); // Crear una referencia al documento del libro
-    this.deleteImageStorage(oldUrl!); // Eliminar la imagen anterior del libro de Firebase Storage si existe
-    console.log(oldUrl);
-    book.imageUrl = await this.addImage(imageFile!); // Llamar al método para agregar la imagen y obtener su URL
-    updateDoc(bookRef, book); // Actualizar el libro en Firestore
+    // Si hay nueva imagen, eliminar la anterior y subir la nueva
+    if (imageFile) {
+      if (oldUrl) {
+        await this.deleteImageStorage(oldUrl);
+        console.log('Imagen antigua eliminada:', oldUrl);
+      }
+      const newImageUrl = await this.addImage(imageFile, book.ownerId!); // Subir la nueva imagen y obtener su URL
+      book.imageUrl = newImageUrl;
+    } updateDoc(bookRef, book); // Actualizar el libro en Firestore
   }
 
   async deleteBook(id: string) {
@@ -76,7 +82,7 @@ export class BookService {
   }
 
   async deleteImageStorage(imageUrl: string): Promise<void> {
-        // Si tiene imagen, eliminarla de Storage
+    // Si tiene imagen, eliminarla de Storage
     if (imageUrl) {
       try {
         // Obtener la referencia desde la URL de descarga

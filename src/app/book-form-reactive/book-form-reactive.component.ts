@@ -6,6 +6,7 @@ import { yearValidator } from '../validators/custom-validator';
 import { titleExistsValidator } from '../validators/async-validators';
 import { ActivatedRoute, Router } from '@angular/router';
 import { first, firstValueFrom } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-book-form-reactive',
@@ -21,7 +22,7 @@ export class BookFormReactiveComponent {
   enviado: boolean = false; // Variable para indicar si el formulario ha sido enviado
   oldUrl: string = ''; // Almacena la URL de la imagen anterior para eliminarla si se actualiza
 
-  selectedFile!:File;
+  selectedFile!: File;
   imagePreview: string | ArrayBuffer | null = null;
 
   constructor(
@@ -29,6 +30,7 @@ export class BookFormReactiveComponent {
     private bookService: BookService,
     private router: Router,
     private route: ActivatedRoute,
+    private authService: AuthService // Inyecta el servicio de autenticación para obtener el ID del usuario
   ) {
     this.bookForm = this.fb.group({
       id: [''], // Inicializa el ID como una cadena vacía, se llenará al editar un libro
@@ -39,7 +41,7 @@ export class BookFormReactiveComponent {
       author: ['', Validators.required],
       year: ['', [Validators.required, Validators.pattern('^[0-9]{4}$'), yearValidator]],  // Validador personalizado para el año
       publishDate: [null, Validators.required] // Inicializa la fecha de publicación como null
-    }, {updateOn: 'change'}); // Actualiza el formulario solo al enviar, no al cambiar los valores de los campos
+    }, { updateOn: 'change' }); // Actualiza el formulario solo al enviar, no al cambiar los valores de los campos
   }
 
   async ngOnInit() {
@@ -68,25 +70,32 @@ export class BookFormReactiveComponent {
       return; // No envía el formulario si es inválido
     }
     const book = this.bookForm.value // Obtiene los valores del formulario
+
+    
+
     if (this.esEdicion)
       await this.bookService.updateBook(book.id, book, this.selectedFile, this.oldUrl) // Si es edición, actualiza el libro
-    else
+    else {
+      const userId = this.authService.getUserId();
+      book.ownerId = userId; // Asigna el ID del usuario al libro
+      console.log("libro nuevo con usuario", userId);
       await this.bookService.addBook(book, this.selectedFile);
+    }
 
     this.bookForm.reset();
     this.selectedFile = undefined!;
     this.enviado = true; // Marca el formulario como enviado
     this.router.navigate(['/catalogo']); // Redirige a la lista de libros después de guardar
   }
-//
-  onFileSelected(event: any){
+  //
+  onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
-    if (this.selectedFile){
+    if (this.selectedFile) {
       const reader = new FileReader();
       reader.onload = e => this.imagePreview = reader.result;
       reader.readAsDataURL(this.selectedFile); // Lee el archivo seleccionado como un ArrayBuffer para la vista previa
-      
-    } 
+
+    }
 
   }
 

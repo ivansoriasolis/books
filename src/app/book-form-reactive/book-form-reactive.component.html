@@ -1,55 +1,86 @@
-<form [formGroup]="bookForm" (ngSubmit)="guardar()">
-  <label>Título:
-    <input formControlName="title">
-  </label>
-  <div *ngIf="bookForm.get('title')?.errors?.['titleTaken'] && bookForm.get('title')?.touched">
-  <small class="error">Este título ya existe en el catálogo</small>
-</div>
-  <div *ngIf="bookForm.get('title')?.errors?.['required'] && bookForm.get('title')?.touched">
-    <small class="error">El título es obligatorio.</small>
-  </div>
-  <br>
+<div class="max-w-lg mx-auto p-6 bg-white rounded-xl shadow">
 
-  <label>Autor:
-    <input formControlName="author">
-  </label>
-  <div *ngIf="bookForm.get('author')?.invalid && bookForm.get('author')?.touched">
-    <small class="error">El autor es obligatorio.</small>
-  </div>
-  <br>
+<form [formGroup]="bookForm" (ngSubmit)="guardar()" class="space-y-4">
 
-  <label>Año:
-    <input type="number" formControlName="year">
-  </label>
-    <div *ngIf="bookForm.get('year')?.invalid && bookForm.get('year')?.touched">
-        <small class="error">El año es obligatorio y debe ser un número.</small>
+  <div>
+    <input formControlName="title"
+      placeholder="Título del libro"
+      class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+
+    <div *ngIf="bookForm.get('title')?.errors?.['titleTaken'] && bookForm.get('title')?.touched"
+      class="text-red-600 text-sm mt-1">
+      Este título ya existe en el catálogo
     </div>
-    <div *ngIf="bookForm.get('year')?.errors?.['invalidYear'] && bookForm.get('year')?.touched">
-        <small class="error">El año debe estar entre 1900 y {{currentYear}}.</small>
-        </div>
-        <br>
-
-  <label>Fecha de publicación:
-    <input type="date" formControlName="publishDate">
-  </label>
-  <div *ngIf="bookForm.get('publishDate')?.invalid && bookForm.get('publishDate')?.touched">
-    <small class="error">La fecha de publicación es obligatoria.</small>
+    <div *ngIf="bookForm.get('title')?.errors?.['required'] && bookForm.get('title')?.touched"
+      class="text-red-600 text-sm mt-1">
+      El título es obligatorio.
     </div>
-  <br>
+  </div>
 
-  <input type="file" (change)="onFileSelected($event)" title="Seleccionar imagen">
-  <br>
-  <img *ngIf="imagePreview" [src]="imagePreview" alt="Vista previa" class="cover-image">
-<div>
-  <button type="submit" [disabled] = "bookForm.invalid">
-    {{ esEdicion ? 'Actualizar Libro' : 'Agregar Libro' }}
-  </button>
-  <button (click)="cancelar()">Cancelar</button>
-</div>
+  <div>
+    <input formControlName="author"
+      placeholder="Nombre del autor"
+      class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <div *ngIf="bookForm.get('author')?.invalid && bookForm.get('author')?.touched"
+      class="text-red-600 text-sm mt-1">
+      El autor es obligatorio.
+    </div>
+  </div>
 
+  <div>
+    <input type="number" formControlName="year"
+      placeholder="Año de publicación"
+      class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <div *ngIf="bookForm.get('year')?.invalid && bookForm.get('year')?.touched"
+      class="text-red-600 text-sm mt-1">
+      El año es obligatorio y debe ser un número.
+    </div>
+    <div *ngIf="bookForm.get('year')?.errors?.['invalidYear'] && bookForm.get('year')?.touched"
+      class="text-red-600 text-sm mt-1">
+      El año debe estar entre 1900 y {{currentYear}}.
+    </div>
+  </div>
+
+  <div>
+    <input type="date" formControlName="publishDate" format="dd-MM-yyyy"
+      placeholder="Fecha de publicación"
+      class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <div *ngIf="bookForm.get('publishDate')?.invalid && bookForm.get('publishDate')?.touched"
+      class="text-red-600 text-sm mt-1">
+      La fecha de publicación es obligatoria.
+    </div>
+  </div>
+
+  <div>
+    <input type="file" (change)="onFileSelected($event)" title="Seleccionar imagen"
+      class="block w-full text-sm text-gray-600 file:mr-4 file:py-2 file:px-4
+        file:rounded-lg file:border-0 file:text-sm file:font-semibold
+        file:bg-blue-600 file:text-white hover:file:bg-blue-700 transition duration-200" />
+  </div>
+
+  <div *ngIf="imagePreview">
+    <img [src]="imagePreview" alt="Vista previa" class="w-32 h-32 object-cover rounded-lg shadow" />
+  </div>
+
+  <div class="flex gap-2 mt-4">
+    <button type="submit"
+      [disabled]="bookForm.invalid"
+      class="px-4 py-2 rounded-xl shadow-md text-white transition duration-200 ease-in-out
+            bg-green-600 hover:bg-green-700 active:scale-95
+            disabled:bg-gray-400 disabled:cursor-not-allowed">
+      {{ esEdicion ? 'Actualizar Libro' : 'Agregar Libro' }}
+    </button>
+
+    <button type="button"
+      (click)="cancelar()"
+      class="px-4 py-2 rounded-xl shadow-md text-gray-700 bg-gray-200 hover:bg-gray-300 active:scale-95 transition duration-200 ease-in-out">
+      Cancelar
+    </button>
+  </div>
 </form>
 
-<div *ngIf="enviado">
-  <h4>Libro enviado:</h4>
-  <pre>{{ bookForm.value | json }}</pre>
+<div *ngIf="enviado" class="mt-6">
+  <h4 class="text-lg font-bold mb-2">Libro enviado:</h4>
+  <pre class="bg-gray-100 p-4 rounded-lg">{{ bookForm.value | json }}</pre>
+</div>
 </div>

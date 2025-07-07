@@ -1,15 +1,43 @@
-<h2>Iniciar sesión</h2>
-<form [formGroup]="loginForm" (ngSubmit)="onLogin()" >
-    <input formControlName="email" type="email"  placeholder="Correo electrónico">
-    <br>
-    <input formControlName="password" type="password"  placeholder="Contraseña">
-    <br>
-    <button type="submit" [disabled]="loginForm.invalid">Iniciar sesión</button>  
+<div class="max-w-lg mx-auto p-6 bg-white rounded-xl shadow">
+<h2 class="text-2xl font-bold mb-4">Iniciar sesión</h2>
+
+<form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="space-y-4">
+  <input
+    formControlName="email"
+    type="email"
+    placeholder="Correo electrónico"
+    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+
+  <input
+    formControlName="password"
+    type="password"
+    placeholder="Contraseña"
+    class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+  />
+
+  <button
+    type="submit"
+    [disabled]="loginForm.invalid"
+    class="w-full px-4 py-2 bg-blue-600 text-white rounded-xl shadow-md hover:bg-blue-700 active:scale-95 transition duration-200 ease-in-out disabled:bg-gray-400 disabled:cursor-not-allowed"
+  >
+    Iniciar sesión
+  </button>
 </form>
-<button (click) = "onLoginWithGoogle()">Iniciar sesión con Google</button>
-<br>
-<div *ngIf="errorMessage" class="error">
-    {{ errorMessage }}
+
+<button
+  (click)="onLoginWithGoogle()"
+  class="w-full mt-4 px-4 py-2 bg-red-600 text-white rounded-xl shadow-md hover:bg-red-700 active:scale-95 transition duration-200 ease-in-out"
+>
+  Iniciar sesión con Google
+</button>
+
+<div *ngIf="errorMessage" class="mt-4 text-red-600 font-semibold">
+  {{ errorMessage }}
 </div>
-<div>
-    ¿No tienes una cuenta? <a [routerLink]="['/register']">Registrarse</a></div>
+
+<div class="mt-4 text-center text-gray-700">
+  ¿No tienes una cuenta?
+  <a [routerLink]="['/register']" class="text-blue-600 hover:underline">Registrarse</a>
+</div>
+</div>
